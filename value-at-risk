@@ -1,0 +1,29 @@
+import pandas as pd
+import numpy as np
+
+# Load the stock data from CSV files
+aapl = pd.read_csv('AAPL.csv', index_col=0)['Close']
+googl = pd.read_csv('GOOGL.csv', index_col=0)['Close']
+msft = pd.read_csv('MSFT.csv', index_col=0)['Close']
+
+# Combine the data into a portfolio
+portfolio = pd.concat([aapl, googl, msft], axis=1)
+portfolio.columns = ['AAPL', 'GOOGL', 'MSFT']
+
+# Calculate the daily returns
+returns = portfolio.pct_change()
+
+# Calculate the mean and covariance matrix of returns
+mean_returns = returns.mean()
+cov_matrix = returns.cov()
+
+# Define the confidence level and investment amount
+confidence_level = 0.95
+investment = 1000000
+
+# Calculate the value at risk (VaR) for the portfolio
+z_score = norm.ppf(1 - confidence_level)
+portfolio_mean = mean_returns.dot(weights)
+portfolio_stdev = np.sqrt(weights.T.dot(cov_matrix).dot(weights))
+portfolio_var = investment * portfolio_mean - z_score * investment * portfolio_stdev
+print("Portfolio VaR: ", portfolio_var)
