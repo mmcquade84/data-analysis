@@ -1,0 +1,35 @@
+import pandas as pd
+import numpy as np
+import yfinance as yf
+import seaborn as sns
+import matplotlib.pyplot as plt
+from pandas_datareader import data as pdr
+
+yf.pdr_override()
+
+# Define the list of stocks to analyze
+stocks = ['AAPL', 'AMZN', 'GOOG', 'MSFT', 'TSLA']
+
+# Set the start and end dates for the analysis
+start_date = '2010-01-01'
+end_date = '2022-04-26'
+
+# Download the stock prices data using Yahoo Finance API
+prices = pd.DataFrame()
+for stock in stocks:
+    prices[stock] = pdr.get_data_yahoo(stock, start=start_date, end=end_date)['Adj Close']
+
+# Calculate the daily return for each stock
+returns = prices.pct_change().dropna()
+
+# Calculate the correlation matrix between the stocks
+corr_matrix = returns.corr()
+
+# Visualize the correlation matrix as a heatmap
+sns.set(style='white')
+mask = np.triu(np.ones_like(corr_matrix, dtype=bool))
+fig, ax = plt.subplots(figsize=(10, 8))
+cmap = sns.diverging_palette(230, 20, as_cmap=True)
+sns.heatmap(corr_matrix, mask=mask, cmap=cmap, annot=True, fmt='.2f', center=0, square=True, linewidths=.5, cbar_kws={"shrink": .5})
+plt.title('Correlation Matrix of Selected Stocks')
+plt.show()
