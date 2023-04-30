@@ -1,0 +1,22 @@
+import requests
+from bs4 import BeautifulSoup
+
+url = "https://www.reuters.com/news/archive/wealth-management-news"
+
+r = requests.get(url)
+
+soup = BeautifulSoup(r.content, 'html5lib')
+
+titles = soup.find_all('h3', class_='story-title')
+descriptions = soup.find_all('div', class_='story-content')
+
+text = ""
+for i in range(len(titles)):
+    title = titles[i].get_text().strip()
+    if i < len(descriptions):
+        description = descriptions[i].get_text().strip()
+        text += f"{title}. {description}. "
+    else:
+        text += f"{title}. "
+
+print(text)
