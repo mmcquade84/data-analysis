@@ -1,0 +1,31 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Define portfolio returns and risk
+portfolio_returns = [0.05, 0.02, 0.04, 0.03, -0.02, -0.01, 0.06, 0.01, 0.04, -0.02]
+portfolio_risk = [0.02, 0.03, 0.01, 0.05, 0.02, 0.01, 0.03, 0.02, 0.04, 0.02]
+
+# Create a pandas DataFrame to hold the data
+data = pd.DataFrame({'Returns': portfolio_returns, 'Risk': portfolio_risk})
+
+# Calculate the mean and standard deviation of returns and risk
+mean_returns = np.mean(portfolio_returns)
+std_returns = np.std(portfolio_returns)
+mean_risk = np.mean(portfolio_risk)
+std_risk = np.std(portfolio_risk)
+
+# Create a scatter plot of returns and risk
+plt.scatter(portfolio_risk, portfolio_returns, c='blue', alpha=0.5)
+
+# Add the mean and standard deviation as markers on the plot
+plt.scatter(mean_risk, mean_returns, c='red', marker='x', s=200)
+plt.scatter(std_risk, mean_returns, c='green', marker='x', s=200)
+
+# Add labels to the plot
+plt.xlabel('Risk')
+plt.ylabel('Returns')
+plt.title('Portfolio Returns vs Risk')
+
+# Display the plot
+plt.show()
