@@ -1,0 +1,57 @@
+import yfinance as yf
+import pandas as pd
+import numpy as np
+import requests
+from bs4 import BeautifulSoup
+
+# Define function to get sector tickers
+def get_sector_tickers(sector):
+    url = f"https://finviz.com/screener.ashx?v=111&f=ind_{sector.lower()}&ft=4"
+    html = requests.get(url).content
+    soup = BeautifulSoup(html, "html.parser")
+    tickers = []
+    for row in soup.find_all("tr")[6:]:
+        ticker = row.find_all("td")[1].text
+        tickers.append(ticker)
+    return tickers
+
+# Define function to get sector data
+def get_sector_data(sector):
+    sector_tickers = get_sector_tickers(sector)
+    sector_prices = {}
+    for ticker in sector_tickers:
+        prices = yf.download(ticker, period="max")
+        # Filter out tickers that were not downloaded successfully
+        if prices.empty:
+            continue
+        prices = prices["Close"]
+        sector_prices[ticker] = prices
+    sector_prices = pd.DataFrame(sector_prices)
+    sector_returns = sector_prices.pct_change().dropna()
+    return sector_returns.mean()
+
+# Define function to calculate Sharpe ratio
+def sharpe_ratio(returns, rf_rate):
+    excess_returns = returns - rf_rate
+    return excess_returns.mean() / excess_returns.std()
+
+# Define risk-free rate
+rf_rate = 0.01
+
+# Define sectors to evaluate
+sectors = ["Basic_Materials", "Communication_Services", "Consumer_Cyclical",
+           "Consumer_Defensive", "Energy", "Financial", "Healthcare",
+           "Industrial", "Real_Estate", "Technology", "Utilities"]
+
+# Calculate Sharpe ratio for each sector
+sector_sharpe_ratios = {}
+for sector in sectors:
+    sector_returns = get_sector_data(sector)
+    sharpe = sharpe_ratio(sector_returns, rf_rate)
+    sector_sharpe_ratios[sector] = sharpe
+
+# Determine sector with highest Sharpe ratio
+best_sector = max(sector_sharpe_ratios, key=sector_sharpe_ratios.get)
+
+# Print results
+print(f"The industry with the highest Sharpe ratio is {best_sector}.")
