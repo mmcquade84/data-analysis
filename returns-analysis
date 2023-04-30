@@ -1,0 +1,16 @@
+import pandas as pd
+import yfinance as yf
+
+# Define a list of tickers
+tickers = ['AAPL', 'GOOG', 'MSFT']
+
+# Retrieve data from Yahoo Finance API
+data = yf.download(tickers, start='2021-01-01', end='2023-04-26')
+
+# Select the 'Open' and 'Close' columns and fill missing values
+df = data[['Open', 'Close']].fillna(method='ffill')
+
+# Calculate the daily return for each stock
+returns = df.pct_change()
+
+print(returns.tail())
