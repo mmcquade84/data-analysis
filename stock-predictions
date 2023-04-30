@@ -1,0 +1,73 @@
+import numpy as np
+import pandas as pd
+import yfinance as yf
+from sklearn.preprocessing import MinMaxScaler
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense, LSTM
+
+# Set the ticker symbol and time frame for the stock data
+ticker = 'AAPL'
+start_date = '2010-01-01'
+end_date = '2022-04-26'
+
+# Get the stock data from Yahoo Finance
+stock_data = yf.download(ticker, start=start_date, end=end_date)
+
+# Select the 'Close' column and fill missing values
+stock_data = stock_data['Close'].fillna(method='ffill')
+
+# Create a scaler to normalize the data
+scaler = MinMaxScaler(feature_range=(0, 1))
+
+# Reshape the data to a 2D array
+stock_data = np.array(stock_data).reshape(-1, 1)
+
+# Normalize the data
+scaled_data = scaler.fit_transform(stock_data)
+
+# Define the number of time steps for the LSTM model to look back
+n_steps = 30
+
+# Split the data into training and testing sets
+train_data = scaled_data[:int(len(scaled_data)*0.8)]
+test_data = scaled_data[int(len(scaled_data)*0.8)-n_steps:]
+
+# Define a function to create the input/output sequences for the LSTM model
+def create_sequences(data, n_steps):
+    X, y = [], []
+    for i in range(len(data)-n_steps):
+        X.append(data[i:i+n_steps])
+        y.append(data[i+n_steps])
+    return np.array(X), np.array(y)
+
+# Create the input/output sequences for the training and testing sets
+X_train, y_train = create_sequences(train_data, n_steps)
+X_test, y_test = create_sequences(test_data, n_steps)
+
+# Define the LSTM model architecture
+model = Sequential()
+model.add(LSTM(units=50, activation='relu', input_shape=(n_steps, 1)))
+model.add(Dense(units=1))
+
+# Compile the model
+model.compile(optimizer='adam', loss='mean_squared_error')
+
+# Train the model
+model.fit(X_train, y_train, epochs=100, batch_size=32)
+
+# Make predictions on the testing set
+y_pred = model.predict(X_test)
+
+# Denormalize the predictions and actual values
+y_pred = scaler.inverse_transform(y_pred)
+y_test = scaler.inverse_transform(y_test)
+
+# Plot the actual and predicted stock prices
+import matplotlib.pyplot as plt
+plt.plot(y_test, label='Actual')
+plt.plot(y_pred, label='Predicted')
+plt.title('Stock Price Prediction')
+plt.xlabel('Time')
+plt.ylabel('Price')
+plt.legend()
+plt.show()
