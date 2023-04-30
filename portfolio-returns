@@ -1,0 +1,52 @@
+import yfinance as yf
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# Define list of tickers to extract data for
+tickers = ['AAPL', 'GOOG', 'AMZN', 'NFLX']
+
+# Extract data using yfinance
+data = yf.download(tickers, start='2021-01-01')['Adj Close']
+
+# Calculate daily returns for each stock
+returns = data.pct_change()
+
+# Calculate covariance matrix of daily returns
+cov_matrix = returns.cov()
+
+# Calculate mean daily returns
+mean_returns = returns.mean()
+
+# Calculate portfolio return and volatility for random portfolio weights
+num_portfolios = 10000
+results = np.zeros((3,num_portfolios))
+weights = np.zeros((len(tickers), num_portfolios))
+
+for i in range(num_portfolios):
+    # Generate random portfolio weights
+    w = np.random.uniform(size=len(tickers))
+    w = w/np.sum(w)
+    weights[:,i] = w
+    
+    # Calculate portfolio return and volatility
+    portfolio_return = np.sum(mean_returns*w)
+    portfolio_volatility = np.sqrt(np.dot(w.T, np.dot(cov_matrix, w)))
+    
+    # Save results
+    results[0,i] = portfolio_return
+    results[1,i] = portfolio_volatility
+    results[2,i] = portfolio_return/portfolio_volatility
+
+# Convert results to pandas DataFrame
+results_df = pd.DataFrame(results.T, columns=['Return', 'Volatility', 'Sharpe Ratio'])
+
+# Plot efficient frontier
+sns.set_style('whitegrid')
+plt.figure(figsize=(10,6))
+sns.scatterplot(x='Volatility', y='Return', data=results_df, hue='Sharpe Ratio', palette='viridis', size='Sharpe Ratio', sizes=(20,200))
+plt.xlabel('Volatility (Std. Deviation)')
+plt.ylabel('Expected Return')
+plt.title('Efficient Frontier')
+plt.show()
