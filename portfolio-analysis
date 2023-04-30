@@ -1,0 +1,35 @@
+import numpy as np
+
+# Define the available asset classes and their weights
+asset_classes = ['Equities', 'Bonds', 'Real Estate', 'Commodities']
+weights = [0.5, 0.3, 0.1, 0.1]
+
+# Define the industries within each asset class and their corresponding expected returns
+equity_industries = {'Technology': 0.15, 'Finance': 0.12, 'Healthcare': 0.08, 'Consumer Goods': 0.06, 'Energy': 0.04}
+bond_industries = {'Corporate': 0.04, 'Municipal': 0.03, 'Treasury': 0.02, 'High-Yield': 0.01, 'International': 0.005}
+re_industries = {'Residential': 0.03, 'Office': 0.02, 'Retail': 0.01, 'Industrial': 0.01, 'Healthcare': 0.005}
+commodity_industries = {'Precious Metals': 0.02, 'Agriculture': 0.01, 'Energy': 0.005, 'Industrial Metals': 0.003, 'Livestock': 0.002}
+
+# Define the target portfolio expected return
+portfolio_expected_return = 0.1
+
+# Calculate the asset allocation mix that achieves the target portfolio expected return
+expected_returns = np.array([portfolio_expected_return / len(asset_classes)] * len(asset_classes))
+asset_allocation_mix = expected_returns / np.array(weights)
+
+# Normalize the asset allocation mix to sum to 1
+asset_allocation_mix = asset_allocation_mix / np.sum(asset_allocation_mix)
+
+# Calculate the expected return for each industry based on the asset allocation mix and industry weights
+equity_expected_returns = np.array(list(equity_industries.values())) * asset_allocation_mix[0]
+bond_expected_returns = np.array(list(bond_industries.values())) * asset_allocation_mix[1]
+re_expected_returns = np.array(list(re_industries.values())) * asset_allocation_mix[2]
+commodity_expected_returns = np.array(list(commodity_industries.values())) * asset_allocation_mix[3]
+
+# Print the asset allocation mix, the expected return for the portfolio, and the expected return for each industry
+print(f'Asset allocation mix: {asset_allocation_mix}')
+print(f'Portfolio expected return: {portfolio_expected_return:.2%}')
+print(f'Equity industries: {equity_industries.keys()}, Expected returns: {equity_expected_returns}')
+print(f'Bond industries: {bond_industries.keys()}, Expected returns: {bond_expected_returns}')
+print(f'Real Estate industries: {re_industries.keys()}, Expected returns: {re_expected_returns}')
+print(f'Commodity industries: {commodity_industries.keys()}, Expected returns: {commodity_expected_returns}')
