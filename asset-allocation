@@ -1,0 +1,19 @@
+import numpy as np
+
+# Define the available asset classes and their weights
+asset_classes = ['Equities', 'Bonds', 'Real Estate', 'Commodities']
+weights = [0.5, 0.3, 0.1, 0.1]
+
+# Define the target portfolio expected return
+portfolio_expected_return = 0.1
+
+# Calculate the asset allocation mix that achieves the target portfolio expected return
+expected_returns = np.array([portfolio_expected_return / len(asset_classes)] * len(asset_classes))
+asset_allocation_mix = expected_returns / np.array(weights)
+
+# Normalize the asset allocation mix to sum to 1
+asset_allocation_mix = asset_allocation_mix / np.sum(asset_allocation_mix)
+
+# Print the asset allocation mix and the expected return for the portfolio
+print(f'Asset allocation mix: {asset_allocation_mix}')
+print(f'Portfolio expected return: {portfolio_expected_return:.2%}')
