@@ -1,0 +1,24 @@
+import yfinance as yf
+import matplotlib.pyplot as plt
+
+tickers = ["TSLA", "GM", "F", "NIO", "CCIV"]
+
+# Download stock data for each ticker
+data = yf.download(tickers, start="2020-01-01", end="2021-12-31")
+
+# Select the "Close" column from the stock data
+close_data = data["Close"]
+
+# Plot the close data for each ticker
+plt.figure(figsize=(10, 5))
+for ticker in tickers:
+    plt.plot(close_data[ticker], label=ticker)
+
+# Set plot title and axis labels
+plt.title("Stock Performance of Top 5 Electric Car Manufacturers")
+plt.xlabel("Date")
+plt.ylabel("Stock Price (USD)")
+
+# Add legend and show plot
+plt.legend()
+plt.show()
