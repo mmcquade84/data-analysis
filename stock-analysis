@@ -1,0 +1,23 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Load the stock data from a CSV file
+data = pd.read_csv('stock_data.csv')
+
+# Calculate the daily returns
+data['Daily Returns'] = data['Close'].pct_change()
+
+# Calculate the moving averages
+data['MA30'] = data['Close'].rolling(window=30).mean()
+data['MA60'] = data['Close'].rolling(window=60).mean()
+
+# Plot the daily returns and moving averages
+fig, ax = plt.subplots(figsize=(10, 5))
+ax.plot(data['Date'], data['Daily Returns'], label='Daily Returns')
+ax.plot(data['Date'], data['MA30'], label='30-day Moving Average')
+ax.plot(data['Date'], data['MA60'], label='60-day Moving Average')
+ax.set_title('Stock Data Analysis')
+ax.set_xlabel('Date')
+ax.set_ylabel('Returns')
+ax.legend()
+plt.show()
