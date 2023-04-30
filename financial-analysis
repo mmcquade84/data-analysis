@@ -1,0 +1,27 @@
+# User inputs
+income = float(input("Enter your monthly income: "))
+housing = float(input("Enter your housing expenses: "))
+food = float(input("Enter your food expenses: "))
+transportation = float(input("Enter your transportation expenses: "))
+utilities = float(input("Enter your utility expenses: "))
+entertainment = float(input("Enter your entertainment expenses: "))
+
+# Calculate total expenses
+total_expenses = housing + food + transportation + utilities + entertainment
+
+# Calculate the difference between income and expenses
+difference = income - total_expenses
+
+# Print the monthly budget report
+print("Monthly Budget Report")
+print("---------------------")
+print(f"Total Income: ${income:.2f}")
+print(f"Total Expenses: ${total_expenses:.2f}")
+print(f"Difference: ${difference:.2f}")
+
+if difference > 0:
+    print("You have a surplus in your budget.")
+elif difference < 0:
+    print("You have a deficit in your budget.")
+else:
+    print("Your budget is balanced.")
