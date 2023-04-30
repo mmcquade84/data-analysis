@@ -1,0 +1,33 @@
+import yfinance as yf
+import pandas as pd
+import numpy as np
+from sklearn.preprocessing import StandardScaler
+from sklearn.cluster import KMeans
+import matplotlib.pyplot as plt
+
+# Define the tickers to use
+tickers = ['AAPL', 'GOOGL', 'MSFT', 'AMZN']
+
+# Download stock data from Yahoo Finance
+data = yf.download(tickers, start="2020-01-01", end="2022-01-01")
+
+# Select the 'Close' column
+df = data['Close']
+
+# Calculate the daily return for each stock
+returns = df.pct_change().dropna()
+
+# Scale the returns to be used for clustering
+scaler = StandardScaler()
+scaled_returns = scaler.fit_transform(returns)
+
+# Use KMeans to cluster the stocks based on their returns
+kmeans = KMeans(n_clusters=3, random_state=0).fit(scaled_returns)
+labels = kmeans.labels_
+
+# Plot the results
+plt.scatter(scaled_returns[:, 0], scaled_returns[:, 1], c=labels)
+plt.title('Stock Clustering')
+plt.xlabel('Scaled Returns')
+plt.ylabel('Scaled Returns')
+plt.show()
