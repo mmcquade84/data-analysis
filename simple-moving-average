@@ -1,0 +1,12 @@
+import yfinance as yf
+
+# Retrieve the stock data for Apple
+ticker = "AAPL"
+stock = yf.Ticker(ticker)
+data = stock.history(period="max")
+
+# Calculate the simple moving average
+data['SMA20'] = data['Close'].rolling(window=20).mean()
+
+# Print the stock data and simple moving average
+print(data.tail())
